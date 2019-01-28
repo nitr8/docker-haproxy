@@ -1,0 +1,21 @@
+[ req ]
+default_bits        = 2048
+distinguished_name  = req_dn
+x509_extensions     = v3_ca
+prompt              = no
+
+[ req_dn ]
+C = US
+ST = State
+L = Location
+O = Secure Trust
+OU = Corporation
+CN = Local Certification Authority
+emailAddress = ssl@domain.com
+
+[ v3_ca ]
+subjectAltName      = @alt_names
+nsComment           = "Local Generated Certificate"
+
+[ alt_names ]
+DNS.1 = *.corp.local
