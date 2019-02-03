@@ -22,6 +22,7 @@ RUN set -x \
 		readline-dev \
 		tar \
 		zlib-dev \
+		rsyslog \
 	\
 	&& wget -O haproxy.tar.gz "$HAPROXY_URL" \
 	&& echo "$HAPROXY_SHA256 *haproxy.tar.gz" | sha256sum -c \
@@ -50,7 +51,11 @@ RUN set -x \
 			| awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
 	)" \
 	&& apk add --virtual .haproxy-rundeps $runDeps \
-	&& apk del .build-deps
+	&& apk del .build-deps \
+	\
+	&& mkdir -p /etc/rsyslog.d/ \
+	&& touch /var/log/haproxy.log \
+	&& ln -sf /dev/stdout /var/log/haproxy.log
 
 # https://www.haproxy.org/download/1.8/doc/management.txt
 # "4. Stopping and restarting HAProxy"
@@ -58,6 +63,7 @@ RUN set -x \
 # "graceful stop is triggered when the SIGUSR1 signal is sent to the haproxy process"
 STOPSIGNAL SIGUSR1
 
+ADD ./etc/ /etc/
 #COPY haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg
 COPY docker-entrypoint.sh /
 RUN chmod +x /docker-entrypoint.sh
