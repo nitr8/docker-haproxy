@@ -1,5 +1,3 @@
-HAProxy
-
 # Info
 
 An easy to use HAProxy container with stats, certificates and custom error handling with rsyslog to view...
