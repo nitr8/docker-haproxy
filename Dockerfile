@@ -1,4 +1,3 @@
-# vim:set ft=dockerfile:
 FROM alpine:3.8
 MAINTAINER Wayne Humphrey <wayne@humphrey.za.net>
 
@@ -22,7 +21,6 @@ RUN set -x \
 		readline-dev \
 		tar \
 		zlib-dev \
-		rsyslog \
 	\
 	&& wget -O haproxy.tar.gz "$HAPROXY_URL" \
 	&& echo "$HAPROXY_SHA256 *haproxy.tar.gz" | sha256sum -c \
@@ -40,8 +38,6 @@ RUN set -x \
 	&& make -C /usr/src/haproxy -j "$(getconf _NPROCESSORS_ONLN)" all $makeOpts \
 	&& make -C /usr/src/haproxy install-bin $makeOpts \
 	\
-	&& mkdir -p /usr/local/etc/haproxy \
-	&& cp -R /usr/src/haproxy/examples/errorfiles /usr/local/etc/haproxy/errors \
 	&& rm -rf /usr/src/haproxy \
 	\
 	&& runDeps="$( \
@@ -53,9 +49,11 @@ RUN set -x \
 	&& apk add --virtual .haproxy-rundeps $runDeps \
 	&& apk del .build-deps \
 	\
+	&& apk add rsyslog \
 	&& mkdir -p /etc/rsyslog.d/ \
 	&& touch /var/log/haproxy.log \
-	&& ln -sf /dev/stdout /var/log/haproxy.log
+	&& ln -sf /dev/stdout /var/log/haproxy.log \
+	&& mkdir /haproxy
 
 # https://www.haproxy.org/download/1.8/doc/management.txt
 # "4. Stopping and restarting HAProxy"
@@ -63,10 +61,12 @@ RUN set -x \
 # "graceful stop is triggered when the SIGUSR1 signal is sent to the haproxy process"
 STOPSIGNAL SIGUSR1
 
-ADD ./errors/ /errors/
-ADD ./etc/ /etc/
-#COPY haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg
-COPY docker-entrypoint.sh /
-RUN chmod +x /docker-entrypoint.sh
-ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["haproxy", "-f", "/usr/local/etc/haproxy/haproxy.cfg"]
+ADD ./helper/errors/ /errors/
+ADD ./helper/etc/ /etc/
+ADD ./helper/haproxy/ /etc/haproxy/
+
+ADD ./helper/entrypoint.sh /bin/entrypoint
+RUN chmod +x /bin/entrypoint
+ENTRYPOINT [ "entrypoint" ]
+
+CMD [ "-f", "/etc/haproxy/global.cfg", "-f", "/etc/haproxy/stats.cfg", "-f", "/etc/haproxy/proxy.cfg" ]
