@@ -8,6 +8,7 @@ ENV HAPROXY_SHA256 8dde83374e602a2892c41405f8b4b9ac2d0c76c7a2d103d3a03c7eff1a23a
 # see https://sources.debian.net/src/haproxy/jessie/debian/rules/ for some helpful navigation of the possible "make" arguments
 RUN set -x \
 	\
+	&& apk upgrade && apk update \
 	&& apk add --no-cache --virtual .build-deps \
 		ca-certificates \
 		gcc \
@@ -50,6 +51,9 @@ RUN set -x \
 	&& apk del .build-deps \
 	\
 	&& apk add rsyslog \
+	certbot \
+	bash \
+	\
 	&& mkdir -p /etc/rsyslog.d/ \
 	&& touch /var/log/haproxy.log \
 	&& ln -sf /dev/stdout /var/log/haproxy.log \
