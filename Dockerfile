@@ -1,9 +1,9 @@
 FROM alpine:3.8
 MAINTAINER Wayne Humphrey <wayne@humphrey.za.net>
 
-ENV HAPROXY_VERSION 1.9.2
-ENV HAPROXY_URL https://www.haproxy.org/download/1.9/src/haproxy-1.9.2.tar.gz
-ENV HAPROXY_SHA256 8dde83374e602a2892c41405f8b4b9ac2d0c76c7a2d103d3a03c7eff1a23a842
+ENV HAPROXY_VERSION 1.9.4
+ENV HAPROXY_URL https://www.haproxy.org/download/1.9/src/haproxy-1.9.4.tar.gz
+ENV HAPROXY_SHA256 8483fe12b30256f83d542b3f699e165d8f71bf2dfac8b16bb53716abce4ba74f
 
 # see https://sources.debian.net/src/haproxy/jessie/debian/rules/ for some helpful navigation of the possible "make" arguments
 RUN set -x \
