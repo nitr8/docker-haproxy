@@ -53,11 +53,13 @@ RUN set -x \
 	&& apk add rsyslog \
 	certbot \
 	bash \
+	mini_httpd \
 	\
 	&& mkdir -p /etc/rsyslog.d/ \
 	&& touch /var/log/haproxy.log \
 	&& ln -sf /dev/stdout /var/log/haproxy.log \
-	&& mkdir /haproxy
+	&& mkdir /haproxy \
+	&& rm -Rf /etc/mini_httpd/
 
 # https://www.haproxy.org/download/1.8/doc/management.txt
 # "4. Stopping and restarting HAProxy"
@@ -68,6 +70,7 @@ STOPSIGNAL SIGUSR1
 ADD ./helper/errors/ /errors/
 ADD ./helper/etc/ /etc/
 ADD ./helper/haproxy/ /etc/haproxy/
+ADD ./helper/www/ /www/
 
 ADD ./helper/entrypoint.sh /bin/entrypoint
 RUN chmod +x /bin/entrypoint
