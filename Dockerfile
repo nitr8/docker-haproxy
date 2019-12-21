@@ -1,11 +1,9 @@
-FROM alpine:3.8
+FROM alpine:3.10.3
 MAINTAINER Wayne Humphrey <wayne@humphrey.za.net>
+ENV HAPROXY_VERSION 2.1.1
+ENV HAPROXY_URL https://www.haproxy.org/download/2.1/src/haproxy-2.1.1.tar.gz
+ENV HAPROXY_SHA256 57e75c1a380fc6f6aa7033f71384370899443c7f4e8a4ba289b5d4350bc76d1a
 
-ENV HAPROXY_VERSION 1.9.4
-ENV HAPROXY_URL https://www.haproxy.org/download/1.9/src/haproxy-1.9.4.tar.gz
-ENV HAPROXY_SHA256 8483fe12b30256f83d542b3f699e165d8f71bf2dfac8b16bb53716abce4ba74f
-
-# see https://sources.debian.net/src/haproxy/jessie/debian/rules/ for some helpful navigation of the possible "make" arguments
 RUN set -x \
 	\
 	&& apk upgrade && apk update \
@@ -30,7 +28,7 @@ RUN set -x \
 	&& rm haproxy.tar.gz \
 	\
 	&& makeOpts=' \
-		TARGET=linux2628 \
+		TARGET=linux-glibc \
 		USE_LUA=1 LUA_INC=/usr/include/lua5.3 LUA_LIB=/usr/lib/lua5.3 \
 		USE_OPENSSL=1 \
 		USE_PCRE=1 PCREDIR= \
@@ -61,10 +59,8 @@ RUN set -x \
 	&& mkdir /haproxy \
 	&& rm -Rf /etc/mini_httpd/
 
-# https://www.haproxy.org/download/1.8/doc/management.txt
+# https://www.haproxy.org/download/2.1/doc/management.txt
 # "4. Stopping and restarting HAProxy"
-# "when the SIGTERM signal is sent to the haproxy process, it immediately quits and all established connections are closed"
-# "graceful stop is triggered when the SIGUSR1 signal is sent to the haproxy process"
 STOPSIGNAL SIGUSR1
 
 ADD ./helper/errors/ /errors/
