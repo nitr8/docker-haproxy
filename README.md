@@ -1,4 +1,5 @@
 # Info
+
 An easy to use HAProxy container with Certbot, stats, LetsEncrypt and custom error handling with Rsyslog to view...
 
 Redirecting all the logs from Rsyslog to the standard out device makes HAProxy logs play nice with docker default logging.
@@ -12,28 +13,37 @@ Listens on port 666 (http) for HAProxy stats with authentication enabled user (f
 
 ![](https://i.imgur.com/G7k8Ce3.png)
 
-# Quick guide
-```
+## Quick guide
+
+```bash
 docker run -it --rm -p 80:80 -p 443:443 -v $(PWD)/haproxy.cfg:/etc/haproxy.cfg -v $(PWD)/certs:/certs whumphrey/haproxy
 ```
-# Detailed guide
-## Mounts
-# SSL certificates
-```
+
+## Detailed guide
+
+### Mounts
+
+## SSL certificates
+
+```bash
 mkdir certs && cd certs
 openssl req -x509 -nodes -days 11297 -newkey rsa:2048 -keyout local.key -out local.pem -config local-wildcard.cnf -sha256
 cat local.pem local.key > wildcard.pem
 ```
-# HAProxy Stats
+
+## HAProxy Stats
+
 ENABLE_STATS=TRUE
 ```http://localhost:666```
 default username and password is - foo / bar
 
-# TBD
-```
+## TBD
+
+```bash
 docker build -t whumphrey/haproxy .
 docker run -it --rm -p 80:80 -p 443:443 -p 666:666 -e ENABLE_STATS=TRUE -v $(PWD)/my_haproxy.cfg:/etc/haproxy/proxy.cfg -v $(PWD)/certs:/certs whumphrey/haproxy
+docker run -it --rm -p 80:80 -p 443:443 -p 666:666 -e ENABLE_STATS=TRUE whumphrey/haproxy
 ```
 
-## Shout outs
+### Shout outs
 https://ops.tips/gists/haproxy-docker-container-logs/
