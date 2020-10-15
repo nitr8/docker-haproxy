@@ -1,4 +1,4 @@
-FROM alpine:3.10.4
+FROM alpine:3.12.0
 MAINTAINER Wayne Humphrey <wayne@humphrey.za.net>
 ENV HAPROXY_URL https://www.haproxy.org/download/2.1/src/haproxy-2.1.2.tar.gz
 ENV HAPROXY_SHA256 6079b08a8905ade5a9a2835ead8963ee10a855d8508a85efb7181eea2d310b77
