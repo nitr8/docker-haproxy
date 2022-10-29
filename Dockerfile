@@ -1,10 +1,15 @@
-FROM alpine:3.12.0
+FROM alpine:3.16.2
 MAINTAINER Wayne Humphrey <wayne@humphrey.za.net>
-ENV HAPROXY_URL https://www.haproxy.org/download/2.1/src/haproxy-2.1.2.tar.gz
-ENV HAPROXY_SHA256 6079b08a8905ade5a9a2835ead8963ee10a855d8508a85efb7181eea2d310b77
+ENV HAPROXY_URL https://www.haproxy.org/download/2.6/src/haproxy-2.6.6.tar.gz
+ENV HAPROXY_SHA256 d0c80c90c04ae79598b58b9749d53787f00f7b515175e7d8203f2796e6a6594d
+
+RUN echo "@edge http://nl.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories
+RUN apk update
+RUN apk add libexecinfo-dev@edge
 
 RUN set -x \
 	\
+	&& echo "@edge http://nl.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \
 	&& apk upgrade && apk update \
 	&& apk add --no-cache --virtual .build-deps \
 		ca-certificates \
@@ -26,17 +31,8 @@ RUN set -x \
 	&& tar -xzf haproxy.tar.gz -C /usr/src/haproxy --strip-components=1 \
 	&& rm haproxy.tar.gz \
 	\
-	&& makeOpts=' \
-		TARGET=linux-glibc \
-		USE_LUA=1 \
-		LUA_INC=/usr/include/lua5.3 \
-		LUA_LIB=/usr/lib/lua5.3 \
-		USE_OPENSSL=1 \
-		USE_PCRE=1 PCREDIR= \
-		USE_ZLIB=1 \
-	' \
-	&& make -C /usr/src/haproxy -j "$(getconf _NPROCESSORS_ONLN)" all $makeOpts \
-	&& make -C /usr/src/haproxy install-bin $makeOpts \
+  && make -C /usr/src/haproxy -j $(nproc) TARGET=linux-glibc USE_OPENSSL=1 USE_LUA=1 USE_PCRE=1 LUA_INC=/usr/include/lua5.3 LUA_LIB=/usr/lib/lua5.3 USE_ZLIB=1 \
+	&& make -C /usr/src/haproxy install-bin \
 	\
 	&& rm -rf /usr/src/haproxy \
 	\
@@ -66,6 +62,7 @@ ADD ./helper/errors/ /errors/
 ADD ./helper/etc/ /etc/
 ADD ./helper/haproxy/ /etc/haproxy/
 ADD ./helper/www/ /www/
+ADD ./certs/wildcard.pem /certs/wildcard.pem
 
 ADD ./helper/entrypoint.sh /bin/entrypoint
 RUN chmod +x /bin/entrypoint

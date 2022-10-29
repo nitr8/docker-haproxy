@@ -27,22 +27,22 @@ docker run -it --rm -p 80:80 -p 443:443 -v $(PWD)/haproxy.cfg:/etc/haproxy.cfg -
 
 ```bash
 mkdir certs && cd certs
-openssl req -x509 -nodes -days 11297 -newkey rsa:2048 -keyout local.key -out local.pem -config local-wildcard.cnf -sha256
+openssl req -x509 -nodes -days 11297 -newkey rsa:2048 -keyout local.key -out local.pem -config ../wildcard.cnf -sha256
 cat local.pem local.key > wildcard.pem
 ```
 
 ## HAProxy Stats
 
-ENABLE_STATS=TRUE
-```http://localhost:666```
-default username and password is - foo / bar
+If you set enabled HAProxy Stats by setting the `ENABLE_STATS` varable to `true` then open a webpage and visit: `http://localhost:666`
 
-## TBD
+The default username and password is (foo / bar)
+
+## Imaging
 
 ```bash
 docker build -t whumphrey/haproxy .
-docker run -it --rm -p 80:80 -p 443:443 -p 666:666 -e ENABLE_STATS=TRUE -v $(PWD)/my_haproxy.cfg:/etc/haproxy/proxy.cfg -v $(PWD)/certs:/certs whumphrey/haproxy
 docker run -it --rm -p 80:80 -p 443:443 -p 666:666 -e ENABLE_STATS=TRUE whumphrey/haproxy
+docker run -it --rm -p 80:80 -p 443:443 -p 666:666 -e ENABLE_STATS=TRUE -v $(PWD)/my_haproxy.cfg:/etc/haproxy/proxy.cfg -v $(PWD)/certs:/certs whumphrey/haproxy
 ```
 
 ### Shout outs

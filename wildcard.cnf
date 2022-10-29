@@ -5,7 +5,7 @@ x509_extensions     = v3_ca
 prompt              = no
 
 [ req_dn ]
-C = US
+C = CH
 ST = State
 L = Location
 O = Secure Trust
@@ -14,8 +14,12 @@ CN = Local Certification Authority
 emailAddress = ssl@domain.com
 
 [ v3_ca ]
-subjectAltName      = @alt_names
-nsComment           = "Local Generated Certificate"
+basicConstraints        = CA:FALSE
+keyUsage                = nonRepudiation, digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+authorityKeyIdentifier  = keyid,issuer
+subjectAltName          = @alt_names
+nsComment               = "Local Generated Certificate"
 
 [ alt_names ]
-DNS.1 = *.corp.local
+DNS.1 = local
+DNS.2 = *.local
